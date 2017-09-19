@@ -1,3 +1,5 @@
+from httpRequestBuilder import *
+
 def ProcessInput(args):
 
     # Make sure we have some input.
@@ -25,11 +27,9 @@ def ProcessCommand(args):
         ProcessHelp(args)
         return
 
-    #if (args[1] == "get"):
-        # TODO
-        
-    #if (args[1] == "post"):
-        # TODO
+    if (args[1] == "get" or args[1] == "post"):
+        request = RequestBuilder(args.join(" ")).buildRequest()
+        return
 
     print (args[1] + " is not a known httpc command.")
 
