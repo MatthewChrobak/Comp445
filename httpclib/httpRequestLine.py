@@ -1,10 +1,10 @@
 class HttpRequestLine:
 
-    __requestType = None    # GET or POST - GET by default
-    __httpVersion = None    # 1.1 by default
-    __requestHeaders = None
-    __requestBody = None
-    __requestURI = None
+    __requestType = "GET"    # GET or POST - GET by default
+    __httpVersion = "1.1"    # 1.1 by default
+    __requestHeaders = {}
+    __requestBody = ""
+    __requestURI = ""
 
     def __init__(self):
         self.reset()
@@ -56,4 +56,4 @@ class HttpRequestLine:
         self.__requestURI = uri
 
     def getURI(self):
-        return self.__requestURI is not None
+        return self.__requestURI

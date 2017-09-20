@@ -28,14 +28,16 @@ class Uri:
         # Only set the port if there is one.
         if not uri.port == None:
             self.__port = uri.port
+        else:
+            self.__port = 80
 
     def getApplicationType(self):
         return self.__applicationType
 
     def getDomain(self):
         output = self.__host
-        if self.__port is not None:
-            output += ":{0}".format(self.__port)
+        #if self.__port is not None:
+            #output += ":{0}".format(self.__port)
         return output
 
     def getResourcePath(self):
@@ -43,6 +45,9 @@ class Uri:
 
     def getArguments(self):
         return self.__arguments
+
+    def getPort(self):
+        return self.__port
 
     def getFullURI(self):
         output = "{0}{1}{2}".format(self.__applicationType, self.getDomain(), self.getResourcePath())
