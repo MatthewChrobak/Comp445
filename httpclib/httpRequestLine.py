@@ -32,7 +32,7 @@ class HttpRequestLine:
     def setRequestType(self, requestType):
         requestType = requestType.upper()
 
-        if requestType == "GET" or requesetType == "POST":
+        if requestType == "GET" or requestType == "POST":
             self.__requestType = requestType
         else:
             print("Unknown request type {0} - keeping the previous requeset type of {1}".format(requestType, self.__requestType))
