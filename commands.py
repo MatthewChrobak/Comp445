@@ -1,4 +1,4 @@
-from httpRequestBuilder import *
+from httpcRequestBuilder import *
 
 def ProcessInput(args):
 
@@ -28,7 +28,7 @@ def ProcessCommand(args):
         return
 
     if (args[1] == "get" or args[1] == "post"):
-        httpcObj = RequestBuilder(" ".join(args)).buildRequest()
+        httpcObj = HttpcRequestBuilder(" ".join(args)).buildRequest()
         httpcObj.execute()
         httpcObj.getResponse()
         return

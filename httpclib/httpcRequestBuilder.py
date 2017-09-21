@@ -3,7 +3,7 @@ from uri import *
 from httpcRequest import *
 import re
 
-class RequestBuilder(HttpRequestLine):
+class HttpcRequestBuilder(HttpRequestLine):
 
     __verbose = False
     __filepath = None
@@ -23,7 +23,7 @@ class RequestBuilder(HttpRequestLine):
         isData = match.group(6) is not None
         dataLine = match.group(7)
         file = match.group(8)
-        fileLine = match.group(9)
+        filePath = match.group(9)
         url = match.group(10)
 
         self.setRequestType(method)
@@ -35,14 +35,14 @@ class RequestBuilder(HttpRequestLine):
             headerData = re.findall(regex, args)
 
             for headerLine in headerData:
-                header = headerLine.split(':')
+                header = headerLine[1:-1].split(':')
                 self.addHeader(header[0], header[1])
 
         if isData:
             self.setBody(dataLine)
 
         if file is not None:
-            self.__filepath = filePath
+            self.__filepath = filePath[1:-1]
 
 
     def buildRequest(self):
