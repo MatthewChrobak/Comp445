@@ -1,4 +1,5 @@
 import socket
+import time
 
 class HttpcRequest:
 
@@ -18,17 +19,21 @@ class HttpcRequest:
 		self.__connection.send(self.__httpMessage.encode("utf-8"))
 
 	def getResponse(self):
-		message = self.__getMessage().split("\r\n")
-		header = message[0]
-		body = message[1:]
+		message = self.__getMessage()
+		splitMessage = message.split("\r\n\r\n")
+		header = splitMessage[0]
+		body = "\r\n".join(splitMessage[1:])
 		if self.__verbose:
 			print(header)
-		print("\r\n")
+			print("\r\n")
 		print(body)
 
 		if self.__filepath is not None:
-			with open(self.__filepath, "w") as fs:
-				fs.write(message)
+			fs = open(self.__filepath, "w")
+			fs.write(header)
+			fs.write('\r\n')
+			fs.write(body)
+			fs.close()
 
 		self.__connection.close()
 
@@ -36,14 +41,23 @@ class HttpcRequest:
 
 	def __getMessage(self):
 		message = ""
+		lastPacket = time.time()
+
+		timeout = 5
+		self.__connection.settimeout(timeout)
+
 		while True:
-			packet = self.__connection.recv(1024, socket.MSG_WAITALL).decode("utf-8")
-			message += packet
-			if len(packet) < 1024:
+
+			if time.time() - lastPacket > timeout:
 				break
+
+			try:
+				packet = self.__connection.recv(2048)
+				if packet:
+					message += packet.decode("utf-8")
+					lastPacket = time.time()
+
+			except:
+				pass
+			
 		return message
-
-
-obj = HttpcRequest("google.ca", 80, "GET / HTTP/1.1\r\nHost: www.google.ca\r\n\r\n".encode("utf-8"))
-obj.execute()
-print(obj.getResponse())
