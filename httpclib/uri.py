@@ -18,11 +18,13 @@ class Uri:
             # Append it to the previous uri, and re-parse it.
             # This will force the domain and port to go to the right properties.
             # Set the application type to an empty string to hide our tracks.
-            uri = urlparse("http://" + fullUri)
-            self.__applicationType = ""
+            self.__applicationType = "http://"
+            uri = urlparse(self.getApplicationType() + fullUri)
 
         self.__arguments = uri.query
         self.__resourcePath = uri.path
+        if uri.path == "":
+                self.__resourcePath = "/"
         self.__host = uri.hostname
         
         # Only set the port if there is one.
@@ -36,8 +38,6 @@ class Uri:
 
     def getDomain(self):
         output = self.__host
-        #if self.__port is not None:
-            #output += ":{0}".format(self.__port)
         return output
 
     def getResourcePath(self):
