@@ -3,8 +3,8 @@ import libs
 from commands import *
 
 while (True):
-   #try:
+   try:
         ProcessInput(sys.stdin.readline().split())
-     #except BaseException as error:
-     #   print(error)
-      #  break
+   except BaseException as error:
+        print(error)
+        break
