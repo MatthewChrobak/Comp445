@@ -1,4 +1,4 @@
-class HttpRequestLine:
+class HttpRequest:
 
     __requestType = "GET"    # GET or POST - GET by default
     __httpVersion = "1.1"    # 1.1 by default
@@ -25,7 +25,7 @@ class HttpRequestLine:
         output = ""
 
         for key in self.__requestHeaders.keys():
-            output += "{0}: {1}".format(key, self.__requestHeaders.get(key)) + "\r\n"
+            output += "{0}: {1}\r\n".format(key, self.__requestHeaders.get(key))
 
         return output
 

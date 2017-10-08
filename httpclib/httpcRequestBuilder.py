@@ -1,15 +1,15 @@
-from httpRequestLine import *
+from httpRequest import *
 from uri import *
 from httpcRequest import *
 import re
 
-class HttpcRequestBuilder(HttpRequestLine):
+class HttpcRequestBuilder(HttpRequest):
 
     __verbose = False
-    __filepath = None
+    __outputfilepath = None
 
     def __init__(self, args):
-        regex = r"(httpc)\s+(post|get)\s+(-v\s+)?(-h\s+(\S+)\s+)*(-d\s+(\'.+?\')\s+)?(-f\s+(\S+)\s+)?(\'.+?\')"
+        regex = r"(httpc)\s+(post|get)\s+(-v\s+)?(-h\s+(\S+)\s+)*(-d\s+(\'.+?\')\s+)?(-o\s+(\'.+?\')\s+)?(\'.+?\')"
         match = re.search(regex, args)
 
         if not match:
@@ -22,8 +22,8 @@ class HttpcRequestBuilder(HttpRequestLine):
 
         isData = match.group(6) is not None
         dataLine = match.group(7)
-        file = match.group(8)
-        filePath = match.group(9)
+        outputfile = match.group(8)
+        outputfilePath = match.group(9)
         url = match.group(10)
 
         self.setRequestType(method)
@@ -41,8 +41,8 @@ class HttpcRequestBuilder(HttpRequestLine):
         if isData:
             self.setBody(dataLine)
 
-        if file is not None:
-            self.__filepath = filePath[1:-1]
+        if outputfile is not None:
+            self.__outputfilepath = outputfilePath[1:-1]
 
 
     def buildRequest(self):
@@ -55,9 +55,9 @@ class HttpcRequestBuilder(HttpRequestLine):
         
         # Make sure we have the host.
         self.addHeader("host", uri.getDomain())
-        fullRequest = "{0}\r\n{1}\r\n\r\n{2}".format(requestLine, self.getHeaders(), self.getBody())
+        fullRequest = "{0}\r\n{1}\r\n{2}".format(requestLine, self.getHeaders(), self.getBody())
 
-        httpcObj = HttpcRequest(uri.getDomain(), uri.getPort(), fullRequest, self.__verbose, self.__filepath)
+        httpcObj = HttpcRequest(uri.getDomain(), uri.getPort(), fullRequest, self.__verbose, self.__outputfilepath)
 
         self.reset()
         return httpcObj

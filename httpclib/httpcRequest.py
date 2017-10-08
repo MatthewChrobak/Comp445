@@ -6,30 +6,38 @@ class HttpcRequest:
 	__httpMessage = None
 	__connection = None
 	__verbose = False
-	__filepath = None
+	__outputfilepath = None
+	# __inputFileFlag = None
 
-	def __init__(self, host, port, message, verbose = False, filepath = None):
+	def __init__(self, host, port, message, verbose = False, outputfilepath = None):
 		self.__connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 		self.__connection.connect((host, port))
 		self.__httpMessage = message
+
 		self.__verbose = verbose
-		self.__filepath = filepath
+		self.__outputfilepath = outputfilepath
 
 	def execute(self):
 		self.__connection.send(self.__httpMessage.encode("utf-8"))
 
 	def getResponse(self):
 		message = self.__getMessage()
+		
+		
 		splitMessage = message.split("\r\n\r\n")
+
+
 		header = splitMessage[0]
 		body = "\r\n".join(splitMessage[1:])
+
 		if self.__verbose:
 			print(header)
 			print("\r\n")
 		print(body)
 
-		if self.__filepath is not None:
-			fs = open(self.__filepath, "w")
+		if self.__outputfilepath is not None:
+			fs = open(self.__outputfilepath, "w")
 			fs.write(header)
 			fs.write('\r\n')
 			fs.write(body)

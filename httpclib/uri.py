@@ -37,8 +37,7 @@ class Uri:
         return self.__applicationType
 
     def getDomain(self):
-        output = self.__host
-        return output
+        return self.__host
 
     def getResourcePath(self):
         return self.__resourcePath

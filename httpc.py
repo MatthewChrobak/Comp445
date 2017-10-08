@@ -7,4 +7,3 @@ while (True):
         ProcessInput(sys.stdin.readline().split())
    except BaseException as error:
         print(error)
-        break
