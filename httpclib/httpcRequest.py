@@ -1,5 +1,6 @@
 import socket
 import time
+import re
 
 class HttpcRequest:
 
@@ -23,12 +24,22 @@ class HttpcRequest:
 	def getResponse(self):
 		message = self.__getMessage()
 		
-		
 		splitMessage = message.split("\r\n\r\n")
 
 
 		header = splitMessage[0]
 		body = "\r\n".join(splitMessage[1:])
+
+		regex = r"HTTP\/1.1\s30[012]"
+		match = re.search(regex, header)
+
+		if match:
+		    regex = r"Location: (.+)"
+		    match = re.search(regex, header)
+
+		    newArgs = match.group(1)
+		    return newArgs
+
 
 		if self.__verbose:
 			print(header)
@@ -44,6 +55,7 @@ class HttpcRequest:
 
 		self.__connection.close()
 
+		return None
 
 
 	def __getMessage(self):
