@@ -49,11 +49,14 @@ class HttpcRequestBuilder(HttpRequest):
                 self.addHeader(header[0], header[1])
 
         if isData:
+            self.addHeader("Content-Length", len(dataLine))
             self.setBody(dataLine)
 
         if (isFile):
             with open(filePath[1:-1], 'r') as file:
-                self.setBody(file.read())
+                fcontent = file.read()
+                self.addHeader("Content-Length", len(fcontent))
+                self.setBody(fcontent)
 
         if outputfile is not None:
             self.__outputfilepath = outputfilePath[1:-1]
