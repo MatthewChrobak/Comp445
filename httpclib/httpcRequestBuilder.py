@@ -9,29 +9,39 @@ class HttpcRequestBuilder(HttpRequest):
     __outputfilepath = None
 
     def __init__(self, args):
-        regex = r"(httpc)\s+(post|get)\s+(-v\s+)?(-h\s+(\S+)\s+)*(-d\s+(\'.+?\')\s+)?(-o\s+(\'.+?\')\s+)?(\'.+?\')"
+        regex = r"(httpc)\s+(post|get)\s+(-v\s+)?(-h\s+(\S+)\s+)*(-d\s+(\'.+?\')\s+)?(-f\s+(\'.+?\')\s+)?(-o\s+(\'.+?\')\s+)?(\'.+?\')"
         match = re.search(regex, args)
 
         if not match:
             raise LookupError("Unable to format args into a request line")
         
         httpc = match.group(1)
-        method = match.group(2)
+        method = match.group(2).upper()
         isVerbose = match.group(3) is not None
         isHeader = match.group(4)
 
         isData = match.group(6) is not None
         dataLine = match.group(7)
-        outputfile = match.group(8)
-        outputfilePath = match.group(9)
-        url = match.group(10)
+
+        isFile = match.group(8) is not None
+        filePath = match.group(9)
+
+        if (method == "GET" and (isFile or isData)):
+            raise LookupError("Cannot use -d or -f for a GET request")
+
+        if (isFile and isData):
+            raise LookupError("Cannot use both -d and -f for a post request.")
+
+        outputfile = match.group(10)
+        outputfilePath = match.group(11)
+        url = match.group(12)
 
         self.setRequestType(method)
         self.setURI(url[1:-1])
         self.__verbose = isVerbose
 
         if isHeader:
-            regex = r"-h\s+(\S+)\s+"
+            regex = r"-h\s+(\'.+?\')\s+"
             headerData = re.findall(regex, args)
 
             for headerLine in headerData:
@@ -40,6 +50,10 @@ class HttpcRequestBuilder(HttpRequest):
 
         if isData:
             self.setBody(dataLine)
+
+        if (isFile):
+            with open(filePath[1:-1], 'r') as file:
+                self.setBody(file.read())
 
         if outputfile is not None:
             self.__outputfilepath = outputfilePath[1:-1]
