@@ -7,7 +7,6 @@ class HttpcRequest:
 	__connection = None
 	__verbose = False
 	__outputfilepath = None
-	# __inputFileFlag = None
 
 	def __init__(self, host, port, message, verbose = False, outputfilepath = None):
 		self.__connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
