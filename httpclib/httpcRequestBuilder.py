@@ -22,6 +22,8 @@ class HttpcRequestBuilder(HttpRequest):
 
         isData = match.group(6) is not None
         dataLine = match.group(7)
+        if (dataLine):
+            dataLine = dataLine[1:-1]
 
         isFile = match.group(8) is not None
         filePath = match.group(9)
@@ -68,7 +70,7 @@ class HttpcRequestBuilder(HttpRequest):
 
         # Method SP Request-URI SP HTTP-Version CRLF
         # https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html
-        requestLine = "{0} {1} HTTP/{2}".format(self.getRequestType(), uri.getResourcePath(), self.getHttpVersion())
+        requestLine = "{0} {1} HTTP/{2}".format(self.getRequestType(), uri.getResourcePath() + uri.getArguments(), self.getHttpVersion())
         
         # Make sure we have the host.
         self.addHeader("host", uri.getDomain())
