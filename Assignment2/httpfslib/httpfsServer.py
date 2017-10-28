@@ -21,39 +21,39 @@ class httpfsServer:
 
     def start(self):
         try:
-            self.__socket.bind(('', self.__port))
+            self.__socket.bind(('', int(self.__port)))
             self.__socket.listen(5)
-            log("Httpfs server is listening at {0}".format(self.__port))
+            self.log("Httpfs server is listening at {0}".format(self.__port))
 
             while True:
                 connection, address = self.__socket.accept()
                 threading.Thread(target=handleClient, args=(connection, address)).start()
             
         finally:
-            log("Something went wrong")
+            self.log("Something went wrong")
             self.__socket.close()
 
 
     def handleClient(connection, address):
-        log("Got a client from {0}".format(address))
+        self.log("Got a client from {0}".format(address))
 
-        log("Closing connection from {0}".format(address))
+        self.log("Closing connection from {0}".format(address))
         connection.close()
         
 
-    def __getMessage(self):
+    def __getMessage(self, connection):
         message = ""
         lastPacket = time.time()
 
         timeout = 5
-        self.__socket.setttimeout(timeout)
+        connection.setttimeout(timeout)
 
         while True:
             if time.time() - lastPacket > timeout:
                 break
 
             try:
-                packet = self.__socket.recv(2048)
+                packet = connection.recv(2048)
                 if packet:
                     message += packet.decode("utf-8")
                     lastPacket = time.time()
@@ -63,5 +63,5 @@ class httpfsServer:
 
         return message
             
-    def log(message):
+    def log(self, message):
         self.__logger.displayMessage(message)
