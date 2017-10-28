@@ -16,6 +16,7 @@ class httpfsServer:
         self.__path = path
 
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.__socket.settimeout(5)
         self.start()
 
 
@@ -27,15 +28,18 @@ class httpfsServer:
 
             while True:
                 connection, address = self.__socket.accept()
-                threading.Thread(target=handleClient, args=(connection, address)).start()
+                threading.Thread(target=self.handleClient, args=(connection, address)).start()
             
         finally:
             self.log("Something went wrong")
             self.__socket.close()
 
 
-    def handleClient(connection, address):
+    def handleClient(self, connection, address):
         self.log("Got a client from {0}".format(address))
+
+        message = self.__getMessage(connection)
+        self.log(message)
 
         self.log("Closing connection from {0}".format(address))
         connection.close()
@@ -46,7 +50,6 @@ class httpfsServer:
         lastPacket = time.time()
 
         timeout = 5
-        connection.setttimeout(timeout)
 
         while True:
             if time.time() - lastPacket > timeout:
