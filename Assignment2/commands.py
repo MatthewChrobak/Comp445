@@ -1,5 +1,6 @@
 import re
 import os
+from httpfsServer import *
 
 def ProcessInput(args):
 
@@ -17,9 +18,21 @@ def ProcessInput(args):
     CreateServer(args)
 
 def CreateServer(args):
-    regex = r""
-    match = re.search(regex, args)
+    regex = r"httpfs\s*(\-v)?\s*(\-p\s+(\d+))?\s*(\-d\s+(\'.+?\'))?"
+    match = re.search(regex, " ".join(args))
 
-    verbose = False
+    if not match:
+        raise LookupError("Unable to format args")
+
+    verbose = match.group(1) is not None
+
     port = 8080
+    if match.group(2) is not None:
+        port = match.group(3)
+    
     path = os.getcwd()
+    if match.group(4) is not None:
+        path = match.group(5)
+
+    
+    httpfsServer(verbose, port, path)
