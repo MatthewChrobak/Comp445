@@ -2,6 +2,7 @@ import socket
 import time
 import threading
 from httpfsLogger import *
+from requestHandler import *
 
 class httpfsServer:
 
@@ -16,7 +17,6 @@ class httpfsServer:
         self.__path = path
 
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__socket.settimeout(5)
         self.start()
 
 
@@ -39,7 +39,9 @@ class httpfsServer:
         self.log("Got a client from {0}".format(address))
 
         message = self.__getMessage(connection)
-        self.log(message)
+
+        print("Handling message {0}".format(message))
+        requestHandler(message)
 
         self.log("Closing connection from {0}".format(address))
         connection.close()
