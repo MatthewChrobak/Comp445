@@ -33,12 +33,13 @@ class requestHandler:
     def getFile(self, filePath):
 
         fullFilePath = self.__path + filePath
+
+        if (fullFilePath is not os.path.realpath(fullFilePath)):
+            return "Error 401: Unauthorized"
+        
         if (os.path.isdir(fullFilePath)):
             return os.listdir(fullFilePath)
         else:
-            if ("file out of range"):
-                return "Error 401: Unauthorized"
-            
             if (not os.path.isfile(fullFilePath)):
                 return "Error 404: Not Found"
             else:
@@ -49,6 +50,9 @@ class requestHandler:
     def postFile(self, filePath, fileContent):
 
         fullFilePath = self.__path + filePath
+
+        if (fullFilePath is not os.path.realpath(fullFilePath)):
+            return "Error 401: Unauthorized"
 
         fs = open(fullFilePath, "w")
         fs.write(fileContent)
