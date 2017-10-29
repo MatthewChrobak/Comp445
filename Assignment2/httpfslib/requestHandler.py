@@ -3,7 +3,13 @@ import os
 
 class requestHandler:
 
-    def __init__(self, args):
+    __method = None
+    __filePath = None
+    __headers = None
+    __fileContent = None
+    __path = None
+    
+    def __init__(self, args, path):
         regex = r"(POST|GET)\s+(.+)HTTP(\/\d\.\d\\r\\n)(Content-Type:.+)(\\r\\n\\r\\n)(.+)"
         match = re.search(regex, args)
 
@@ -11,36 +17,38 @@ class requestHandler:
             raise LookupError("invalid http request")
 
 
-        method = match.group(1)
-        filePath = match.group(2)
-        headers = match.group(4)
-        fileContent = match.group(6)
+        __method = match.group(1)
+        __filePath = match.group(2)
+        __headers = match.group(4)
+        __fileContent = match.group(6)
+        __path = path
 
         if(method == "GET"):
-            getFile(filePath)
+            getFile(__filePath)
 
         if(method == "POST"):
-            postFile(filePath, fileContent)
+            postFile(__filePath, __fileContent)
 
 
     def getFile(self, filePath):
-        if (filePath == "/"):
-            return os.listdir(os.getcwd())
 
-        fullFilePath = os.getcwd() + filePath
-        if (os.path.isfile(fullFilePath)):
-            if("file out of range"):
-                return "Error 401: Unauthorized"
-
-            with open(fullFilePath, 'r') as file:
-                fcontent = file.read()
-                return fcontent
+        fullFilePath = self.__path + filePath
+        if (os.path.isdir(fullFilePath)):
+            return os.listdir(fullFilePath)
         else:
-            return "Error 404: Not Found"
+            if ("file out of range"):
+                return "Error 401: Unauthorized"
+            
+            if (not os.path.isfile(fullFilePath)):
+                return "Error 404: Not Found"
+            else:
+                with open(fullFilePath, 'r') as file:
+                    fcontent = file.read()
+                    return fcontent
 
     def postFile(self, filePath, fileContent):
 
-        fullFilePath = os.getcwd() + filePath
+        fullFilePath = self.__path + filePath
 
         fs = open(fullFilePath, "w")
         fs.write(fileContent)
