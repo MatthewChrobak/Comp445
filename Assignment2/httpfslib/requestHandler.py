@@ -1,5 +1,6 @@
 import re
 import os
+from httpResponse import *
 
 class requestHandler:
 
@@ -8,43 +9,47 @@ class requestHandler:
     __headers = None
     __fileContent = None
     __path = None
+    __response = None
     
     def __init__(self, args, path):
-        regex = r"(POST|GET)\s+(.+)HTTP(\/\d\.\d\\r\\n)(Content-Type:.+)(\\r\\n\\r\\n)(.+)"
+        regex = r"(POST|GET)\s+(.+)HTTP"
         match = re.search(regex, args)
 
         if not match:
             raise LookupError("invalid http request")
 
 
-        __method = match.group(1)
-        __filePath = match.group(2)
-        __headers = match.group(4)
-        __fileContent = match.group(6)
-        __path = path
+        self.__method = match.group(1)
+        self.__filePath = match.group(2)
+        self.__path = path
 
-        if(method == "GET"):
-            getFile(__filePath)
+        if(self.__method == "GET"):
+            self.__response = self.getFile(self.__filePath)
 
-        if(method == "POST"):
-            postFile(__filePath, __fileContent)
+        if(self.__method == "POST"):
+            self.__response = self.postFile(self.__filePath, self.__fileContent)
 
 
     def getFile(self, filePath):
 
-        fullFilePath = self.__path + filePath
+        response = HttpResponse()
+        response.setStatus(200, "OK")
+
+        fullFilePath = os.path.realpath(self.__path + filePath)
+        
         if (os.path.isdir(fullFilePath)):
-            return os.listdir(fullFilePath)
+            response.setBody(os.listdir(fullFilePath))
         else:
             if ("file out of range"):
-                return "Error 401: Unauthorized"
-            
-            if (not os.path.isfile(fullFilePath)):
-                return "Error 404: Not Found"
+                response.setStatus(401, "Unauthorized")
+            elif (not os.path.isfile(fullFilePath)):
+                response.setStatus(404, "File not found")
             else:
                 with open(fullFilePath, 'r') as file:
                     fcontent = file.read()
-                    return fcontent
+                    response.setBody(fcontent)
+
+        return response
 
     def postFile(self, filePath, fileContent):
 
@@ -53,3 +58,6 @@ class requestHandler:
         fs = open(fullFilePath, "w")
         fs.write(fileContent)
         fs.close()
+
+    def getResponse(self):
+        return self.__response

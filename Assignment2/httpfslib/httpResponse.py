@@ -1,4 +1,4 @@
-class HttpRequest:
+class HttpResponse:
 
     __httpVersion = "1.1"    # 1.1 by default
     __statusMessage = ""
@@ -12,6 +12,7 @@ class HttpRequest:
         self.__httpVersion = "1.1"
         self.__responseHeaders = {}
         self.__responseBody = ""
+        self.__statusMessage = self.setStatus(200, "Okay")
 
 
     def addHeader(self, key, value):
@@ -33,16 +34,17 @@ class HttpRequest:
         return self.__httpVersion
 
     def setBody(self, body):
+        self.addHeader("Content-Length", len(str(body)))
         self.__responseBody = body
 
     def getBody(self):
         return self.__responseBody
 
-    def setStatusMessage(self, code, reason):
-        self.__statusMessage = "{0} {1}".format(code, reason)
+    def setStatus(self, code, reason):
+        self.__statusMessage = "{0} {1}".format(str(code), str(reason))
 
-    def getStatusMessage(self):
+    def getStatus(self):
         return self.__statusMessage
 
     def getFullHttpRequest(self):
-        return "HTTP/{0} {1}\r\n{2}\r\n{3}".format(self.getHttpVersion(), self.getStatusMessage(), self.getHeaders(), self.getBody())
+        return "HTTP/{0} {1}\r\n{2}\r\n{3}".format(self.getHttpVersion(), self.getStatus(), self.getHeaders(), self.getBody())
