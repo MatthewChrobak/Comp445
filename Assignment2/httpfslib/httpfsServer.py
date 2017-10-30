@@ -39,9 +39,13 @@ class httpfsServer:
         self.log("Got a client from {0}".format(address))
 
         message = self.__getMessage(connection)
-
         print("Handling message {0}".format(message))
-        requestHandler(message)
+        response = requestHandler(message, self.__path).getResponse().getFullHttpRequest().encode("utf-8")
+
+        print("Responding with")
+        print(response)
+
+        connection.sendall(response)
 
         self.log("Closing connection from {0}".format(address))
         connection.close()
