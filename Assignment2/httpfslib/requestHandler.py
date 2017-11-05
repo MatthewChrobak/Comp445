@@ -31,7 +31,6 @@ class requestHandler:
 
 
     def getFile(self, filePath):
-
         response = HttpResponse()
         response.setStatus(200, "OK")
 
@@ -54,6 +53,9 @@ class requestHandler:
     def postFile(self, filePath, fileContent):
 
         fullFilePath = self.__path + filePath
+
+        if (fullFilePath is not os.path.realpath(fullFilePath)):
+            return "Error 401: Unauthorized"
 
         fs = open(fullFilePath, "w")
         fs.write(fileContent)
