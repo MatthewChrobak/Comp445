@@ -24,6 +24,7 @@ class requestHandler:
         self.__filePath = match.group(2)
         self.__path = path
 
+
         if(self.__method == "GET"):
             self.__response = self.getFile(self.__filePath)
 
@@ -37,18 +38,20 @@ class requestHandler:
         response.setStatus(200, "OK")
 
         fullFilePath = os.path.realpath(self.__path + filePath)
-        
-        if (os.path.isdir(fullFilePath)):
-            response.setBody(os.listdir(fullFilePath))
+
+        if (len(fullFilePath) < len(self.__path)):
+            response.setStatus(401, "Unauthorized")
         else:
-            if ("file out of range"):
-                response.setStatus(401, "Unauthorized")
-            elif (not os.path.isfile(fullFilePath)):
-                response.setStatus(404, "File not found")
+            if (os.path.isdir(fullFilePath)):
+                response.setBody(os.listdir(fullFilePath))
             else:
-                with open(fullFilePath, 'r') as file:
-                    fcontent = file.read()
-                    response.setBody(fcontent)
+
+                if (not os.path.isfile(fullFilePath)):
+                    response.setStatus(404, "File not found")
+                else:
+                    with open(fullFilePath, 'r') as file:
+                        fcontent = file.read()
+                        response.setBody(fcontent)
 
         return response
 
