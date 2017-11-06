@@ -62,8 +62,8 @@ class requestHandler:
                 if (not os.path.isfile(fullFilePath)):
                     response.setStatus(404, "File not found")
                 else:
-                    content = fullFilePath,split(".")[-1]
-                    contentType = analyzeContentType(content)
+                    content = fullFilePath.split(".")[-1]
+                    contentType = self.analyzeContentType(content)
                     response.addHeader("Content-Type", contentType)
                     with open(fullFilePath, 'r') as file:
                         fcontent = file.read()
@@ -91,17 +91,23 @@ class requestHandler:
     def getResponse(self):
         return self.__response
 
-    def analyzeContentType(content):
-        if (content == "txt" or "html"):
-            return "text/html; charset=utf-8"
-        if (content == "jpeg" or "gif" or "png" or "ico"):
-            return "image/" + content
-        if (content == "mp3" or "acc" or "midi"):
-            return "audio/" + content
-        if (content == "mp4" or "mpeg" or "avi"):
-            return "video/" + content
-        if (content == "pdf" or "rar" or "doc" or "jar" or "js" or "json"):
-            return "application/" + content
+    def analyzeContentType(self, content):
+        switch = {
+                "txt": "text/html; charset=utf-8",
+                "html": "text/html; charset=utf-8",
+                "jpeg": "image/" + content,
+                "gif": "image/" + content,
+                "png": "image/" + content,
+                "ico": "image/" + content,
+                "mp3": "audio/" + content,
+                "acc": "audio/" + content,
+                "midi": "audio/" + content,
+                "mp4": "video/" + content,
+                "mpeg": "video/" + content,
+                "avi": "video/" + content
+            }
+        return switch.get(content, "application/" + content)
+    
             
         
         
