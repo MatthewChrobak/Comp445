@@ -62,7 +62,7 @@ class HttpcRequest:
 		message = ""
 		lastPacket = time.time()
 
-		timeout = 5
+		timeout = 2
 		self.__connection.settimeout(timeout)
 
 		while True:
