@@ -28,6 +28,13 @@ class requestHandler:
         if(self.__method == "GET"):
             self.__response = self.getFile(self.__filePath)
 
+            # See if there's a content disposition.
+            regex = r"Content-Disposition:\s*(.+)"
+            match = re.search(regex, args)
+
+            if match:
+                self.__response.addHeader("Content-Disposition", match.group(1))
+
         if(self.__method == "POST"):
             self.__fileContent = args.split("\r\n\r\n")[1:][0]
             self.__response = self.postFile(self.__filePath, self.__fileContent)
