@@ -39,7 +39,7 @@ class requestHandler:
 
         fullFilePath = os.path.realpath(self.__path + filePath)
 
-        if (len(fullFilePath) < len(self.__path)):
+        if (not fullFilePath.startswith(self.__path)):
             response.setStatus(401, "Unauthorized")
         else:
             if (os.path.isdir(fullFilePath)):
@@ -69,8 +69,8 @@ class requestHandler:
             writeToFile(fullFilePath, fileContent)
         except IOError:
             response.setStatus(403, "IO Error")
-
-        return response
+        finally:
+            return response
 
     def getResponse(self):
         return self.__response
