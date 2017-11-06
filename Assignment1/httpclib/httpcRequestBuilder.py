@@ -9,7 +9,7 @@ class HttpcRequestBuilder(HttpRequest):
     __outputfilepath = None
 
     def __init__(self, args):
-        regex = r"(httpc)\s+(post|get)\s+(-v\s+)?(-h\s+(\S+)\s+)*(-d\s+(\'.+?\')\s+)?(-f\s+(\'.+?\')\s+)?(-o\s+(\'.+?\')\s+)?(\'.+?\')"
+        regex = r"(httpc)\s+(post|get)\s+(-v\s+)?(-h\s+(\'.+?\')\s+)*(-d\s+(\'.+?\')\s+)?(-f\s+(\'.+?\')\s+)?(-o\s+(\'.+?\')\s+)?(\'.+?\')"
         match = re.search(regex, args)
 
         if not match:
