@@ -1,6 +1,7 @@
 import re
 import os
 from httpResponse import *
+from fileconcurrency import *
 
 class requestHandler:
 
@@ -61,12 +62,8 @@ class requestHandler:
             response.setStatus(401, "Unauthorized")
             return response
 
-        if (fullFilePath)
-
         try:
-            fs = open(fullFilePath, "w")
-            fs.write(fileContent)
-            fs.close()
+            writeToFile(fullFilePath, fileContent)
         except IOError:
             response.setStatus(403, "IO Error")
 
