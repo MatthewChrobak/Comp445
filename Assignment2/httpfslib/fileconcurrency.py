@@ -15,6 +15,7 @@ def writeToFile(filepath, content):
                 
             removeWriter(filepath)
             lock.release()
+            break
         else:
             lock.release()
             time.sleep(0)
@@ -32,6 +33,7 @@ def readFromFile(filepath):
             
             removeReader(filepath)
             lock.release()
+            break
         else:
             lock.release()
             time.sleep(0)
