@@ -1,51 +1,49 @@
-import socket
-import Packet
+from socket import *
+from Packet import *
+from PacketDecoder import *
+from PacketBuilder import *
 
 class ReceiverController:
-	
-	__socketRC = NULL
-	__ACK = NULL
-	
-	__window = NULL
-	__timer = NULL
-	__MaxWindowSize = NULL
-	
+    
+    __socketRC = None
+    __packetBuilder = None
 
-	def __init__(self):
-		self.__window = []
-		self.__timer = []
-		__socketRC = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    def __init__(self, port):
+        self.__socketRC = socket(AF_INET, SOCK_DGRAM)
+        self.__socketRC.bind(('', port))
+        self.__packetBuilder = PacketBuilder('127.0.0.1', 80)
+        print("Listening")
 
+    def sendPacket(self, packetType, sequenceNumber, content, address):
+        packet = self.__packetBuilder.build(packetType, sequenceNumber, content)
+        self.__socketRC.sendto(packet.getBytes(), address)
 
-	def convertDataToPacket(self, data):
-		
-		packetType = int.from_bytes(data[0], 'big')
-		packetSN = int.from_bytes(data[1:5], 'big')
-		packetDestinationAddress = int.from_bytes(data[5:9], 'big')
-		packetDestinationPort = int.from_bytes(data[9:11], 'big')
-		packetPayload = data[11:].decode('utf-8')
+    def getPacket(self):
+        data, addr = self.__socketRC.recvfrom(PACKET_SIZE)
+        return PacketDecoder.decode(data)
 
-		reassembledPacket = Packet(packetType, packetSN, packetDestinationAddress, packetDestinationPort, packetPayload)
-		return reassembledPacket		
+    def buildConnection(self):
+        packet = self.getPacket()
 
+        if (packet.getPacketType() == PACKET_TYPE_SYN):
+            print("Got syn")
+            self.sendPacket(PACKET_TYPE_SYN_ACK, 1, "", (packet.getDestinationAddress(), packet.getDestinationPort()))
 
-	def reliableDataTrans(self, packet):
+            packet = self.getPacket()
 
-		if(packet.getPacketType == 1):
-			if(self.__ACK == True):
-			{
-				if(len(self.__window) < self.__MaxWindowSize):
-					self.__window.append(packet)
-			}
+            if (packet.getPacketType() == PACKET_TYPE_AK):
+                print("Got ak")
+                return True
 
-		
+        return False
 
-		if(packet.getPacketType == 2):
-			packet.setPacketType(3)
-			senderAddress = packet.getDestinationAddress()
-			self.__socketRC.sendto(packet, senderAddress)
+    def getMessage(self):
+        # Make sure we have some connection.
+        if (self.buildConnection()):
+            while (True):
+                packet = self.getPacket()
 
-		
-		if(packet.getPacketType == 4):
-			self.__ACK = True
+                if (packet.getPacketType() == PACKET_TYPE_DATA):
+                    print("I got something")
+
 
