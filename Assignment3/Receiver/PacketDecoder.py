@@ -5,8 +5,6 @@ class PacketDecoder:
 	def decode(self, b_packet):
 		packetType = int.from_bytes([b_packet[0]], 'big')
 		packetSN = int.from_bytes(b_packet[1:5], 'big')
-		#packetDestinationAddress = b_packet[5:9].decode('utf-8')
-		#packetDestinationAddress = int.from_bytes(data[5:9], 'big')
 		addressP1 = int.from_bytes([b_packet[5]], 'big')
 		addressP2 = int.from_bytes([b_packet[6]], 'big')
 		addressP3 = int.from_bytes([b_packet[7]], 'big')
