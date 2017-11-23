@@ -24,6 +24,8 @@ class requestHandler:
         self.__filePath = match.group(2)
         self.__path = path
 
+        print(path)
+
         if(self.__method == "GET"):
             self.__response = self.getFile(self.__filePath)
 

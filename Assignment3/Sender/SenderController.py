@@ -7,6 +7,7 @@ class SenderController:
     __window = None
     __socket = None
     __addr = None
+    __routerAddr = ('127.0.0.1', 3000)
     __packetBuilder = None
 
 
@@ -20,14 +21,14 @@ class SenderController:
         self.__addr = (ip, port)
 
     def sendMessage(self, message):
-        self.connect():
+        self.connect()
             
 
         # Todo: Send the window. Check if connected.
 
     def sendPacket(self, packetType, sequenceNumber, content):
         packet = self.__packetBuilder.build(packetType, sequenceNumber, content)
-        self.__socket.sendto(packet.getBytes(), self.__addr)
+        self.__socket.sendto(packet.getBytes(), self.__routerAddr)
 
     def getResponse(self):
         data = self.__socket.recvfrom(PACKET_SIZE)
@@ -39,6 +40,8 @@ class SenderController:
 
         if (response.getPacketType() == PACKET_TYPE_SYN_AK):
             self.sendPacket(PACKET_TYPE_AK, 0, "")
+            print("True")
             return True
 
+        print("False")
         return False

@@ -3,7 +3,7 @@ from Packet import *
 class PacketDecoder:
 
 	@staticmethod
-	def decode(self, b_packet):
+	def decode(b_packet):
 		packetType = int.from_bytes([b_packet[0]], 'big')
 		packetSN = int.from_bytes(b_packet[1:5], 'big')
 		addressP1 = int.from_bytes([b_packet[5]], 'big')
