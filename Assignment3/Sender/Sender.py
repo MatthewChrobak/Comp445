@@ -1,6 +1,6 @@
 import libs
-from Packet import *
+from socket import *
+from SenderController import *
 
-pkt = Packet(PACKET_TYPE_DATA, 1, "localhost", 80, "")
-
-print(pkt.getBytes())
+sc = SenderController("localhost", 12000)
+sc.sendMessage("Hello world")
