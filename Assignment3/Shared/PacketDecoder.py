@@ -1,7 +1,8 @@
 from Packet import *
 
 class PacketDecoder:
-	
+
+	@staticmethod
 	def decode(self, b_packet):
 		packetType = int.from_bytes([b_packet[0]], 'big')
 		packetSN = int.from_bytes(b_packet[1:5], 'big')
