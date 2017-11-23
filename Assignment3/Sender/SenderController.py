@@ -1,6 +1,7 @@
 from socket import *
 from Packet import *
 from PacketBuilder import *
+from PacketDecoder import *
 
 class SenderController:
     __window = None
@@ -19,7 +20,8 @@ class SenderController:
         self.__addr = (ip, port)
 
     def sendMessage(self, message):
-        self.__connect()
+        self.connect():
+            
 
         # Todo: Send the window. Check if connected.
 
@@ -27,9 +29,16 @@ class SenderController:
         packet = self.__packetBuilder.build(packetType, sequenceNumber, content)
         self.__socket.sendto(packet.getBytes(), self.__addr)
 
+    def getResponse(self):
+        data = self.__socket.recvfrom(PACKET_SIZE)
+        return PacketDecoder.decode(data)
+        
+    def connect(self):
+        self.sendPacket(PACKET_TYPE_SYN, 0, "")
+        response = self.getResponse()
 
-    def __connect(self):
-        self.sendPacket(PACKET_TYPE_SYN, 1, "")
+        if (response.getPacketType() == PACKET_TYPE_SYN_AK):
+            self.sendPacket(PACKET_TYPE_AK, 0, "")
+            return True
 
-        # Denotes that we connected. Assume true for now.
-        return True
+        return False
