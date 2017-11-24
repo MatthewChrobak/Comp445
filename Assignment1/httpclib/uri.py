@@ -43,15 +43,14 @@ class Uri:
         return self.__resourcePath
 
     def getArguments(self):
-        return self.__arguments
+        if (self.__arguments):
+            return "?" + self.__arguments
+        else:
+            return ""
 
     def getPort(self):
         return self.__port
 
     def getFullURI(self):
-        output = "{0}{1}{2}".format(self.__applicationType, self.getDomain(), self.getResourcePath())
-
-        if self.__arguments is not "":
-            output += "?{0}".format(self.getArguments())
-
+        output = "{0}{1}{2}{3}".format(self.__applicationType, self.getDomain(), self.getResourcePath(), self.getArguments())
         return output
