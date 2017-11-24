@@ -25,7 +25,7 @@ class ReceiverController:
         print(pkt.getDestinationAddress())
 
         if (self.__packetBuilder is None):
-            self.__packetBuilder(pkt.getDestinationAddress(), pkt.getDestinationPort())
+            self.__packetBuilder = PacketBuilder(pkt.getDestinationAddress(), pkt.getDestinationPort())
         
         print(data)
         return pkt
@@ -34,18 +34,14 @@ class ReceiverController:
         packet = self.getPacket()
 
         if (packet.getPacketType() == PACKET_TYPE_SYN):
-            print("Got syn")
             addr = (packet.getDestinationAddress(), packet.getDestinationPort())
-            print(addr)
             self.sendPacket(PACKET_TYPE_SYN_AK, 1, "", addr)
 
             packet = self.getPacket()
 
             if (packet.getPacketType() == PACKET_TYPE_AK):
-                print("Got ak")
                 return True
 
-        print("This didn't work")
         return False
 
     def getMessage(self):

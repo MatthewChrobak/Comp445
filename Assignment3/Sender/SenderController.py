@@ -31,7 +31,7 @@ class SenderController:
         self.__socket.sendto(packet.getBytes(), self.__routerAddr)
 
     def getResponse(self):
-        data = self.__socket.recvfrom(PACKET_SIZE)
+        data, addr = self.__socket.recvfrom(PACKET_SIZE)
         return PacketDecoder.decode(data)
         
     def connect(self):
@@ -40,8 +40,6 @@ class SenderController:
 
         if (response.getPacketType() == PACKET_TYPE_SYN_AK):
             self.sendPacket(PACKET_TYPE_AK, 0, "")
-            print("True")
             return True
 
-        print("False")
         return False
