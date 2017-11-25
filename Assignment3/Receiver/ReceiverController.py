@@ -9,12 +9,12 @@ class ReceiverController:
     __socketRC = None
     __routerAddr = ('127.0.0.1', 3000)
     __packetBuilder = None
+    address = None
     __window = None
+    __port = None
 
     def __init__(self, port):
-        self.__socketRC = socket(AF_INET, SOCK_DGRAM)
-        self.__socketRC.bind(('', port))
-        print("Listening")
+        self.__port = port
 
     def sendPacket(self, packetType, sequenceNumber, content):
         print("Sending packet type: " + str(packetType) + " with #" + str(sequenceNumber))
@@ -32,6 +32,7 @@ class ReceiverController:
         print("Got packet type: " + str(pkt.getPacketType()) + " with #" + str(pkt.getSequenceNumber()))
 
         if (self.__packetBuilder is None):
+            self.address = (pkt.getDestinationAddress(), pkt.getDestinationPort())
             self.__packetBuilder = PacketBuilder(pkt.getDestinationAddress(), pkt.getDestinationPort())
         
         return pkt
@@ -53,6 +54,10 @@ class ReceiverController:
         return False
 
     def getMessage(self):
+        self.__socketRC = socket(AF_INET, SOCK_DGRAM)
+        self.__socketRC.bind(('', self.__port))
+        print("Listening")
+        
         # Make sure we have some connection.
         if (self.buildConnection()):
 
@@ -60,7 +65,7 @@ class ReceiverController:
                 self.__window.process()
 
             self.sendPacket(PACKET_TYPE_AK, self.__window.windowSize, "")
-
+            self.__socketRC.close()
             return self.__window.getMessage()
 
 

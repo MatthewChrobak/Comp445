@@ -14,76 +14,80 @@ PACKET_SIZE = PACKET_TYPE_SIZE + SEQUENCE_SIZE + DESTINATION_ADDRESS_SIZE + DEST
 
 class Packet:
 
-	__packetType = PACKET_TYPE_NONE
-	__sequenceNumber = -1
-	__destinationAddress = None
-	__destinationPort = None
-	__payload = None
+    __packetType = PACKET_TYPE_NONE
+    __sequenceNumber = -1
+    __destinationAddress = None
+    __destinationPort = None
+    __payload = None
 
 
-	def __init__(self, packetType, sequenceNumber, destinationAddress, destinationPort, payload):
-		self.setPacketType(packetType)
-		self.setSequenceNumber(sequenceNumber)
-		self.setDestinationAddress(destinationAddress)
-		self.setDestinationPort(destinationPort)
-		self.setPayload(payload)
+    def __init__(self, packetType, sequenceNumber, destinationAddress, destinationPort, payload):
+        self.setPacketType(packetType)
+        self.setSequenceNumber(sequenceNumber)
+        self.setDestinationAddress(destinationAddress)
+        self.setDestinationPort(destinationPort)
+        self.setPayload(payload)
 
-	def getPacketType(self):
-		return self.__packetType
+    def getPacketType(self):
+        return self.__packetType
 
-	def setPacketType(self, packetType):
-		self.__packetType = packetType
+    def setPacketType(self, packetType):
+        self.__packetType = packetType
 
-	def getSequenceNumber(self):
-		return self.__sequenceNumber
+    def getSequenceNumber(self):
+        return self.__sequenceNumber
 
-	def setSequenceNumber(self, sequenceNumber):
-		self.__sequenceNumber = int(sequenceNumber)
+    def setSequenceNumber(self, sequenceNumber):
+        self.__sequenceNumber = int(sequenceNumber)
 
-	def getDestinationAddress(self):
-		return self.__destinationAddress
+    def getDestinationAddress(self):
+        return self.__destinationAddress
 
-	def setDestinationAddress(self, destinationAddress):
-		if (str(destinationAddress).lower() is 'localhost'):
-			destinationAddress = "127.0.0.1"
+    def setDestinationAddress(self, destinationAddress):
+        if (str(destinationAddress).lower() is 'localhost'):
+            destinationAddress = "127.0.0.1"
 
-		self.__destinationAddress = str(destinationAddress)
+        self.__destinationAddress = str(destinationAddress)
 
-	def getDestinationPort(self):
-		return int(self.__destinationPort)
+    def getDestinationPort(self):
+        return int(self.__destinationPort)
 
-	def setDestinationPort(self, destinationPort):
-		self.__destinationPort = int(destinationPort)
+    def setDestinationPort(self, destinationPort):
+        self.__destinationPort = int(destinationPort)
 
-	def getPayload(self):
-		return self.__payload
+    def getPayload(self):
+        return self.__payload
 
-	def setPayload(self, payload):
-		if (len(payload) > PAYLOAD_SIZE):
-			raise Exception("Invalid payload size {0}".format(str(len(payload))))
-		
-		# Set the payload, and pad it with whitespace until all 1013 bytes are used.
-		self.__payload = "{0}{1}".format(payload, ' ' * (PAYLOAD_SIZE - len(payload)))
+    def setPayload(self, payload):
+        payloadSize = len(bytes(payload, "utf-8").decode("unicode_escape"))
+        if (payloadSize > PAYLOAD_SIZE):
+            raise Exception("Invalid payload size {0}".format(str(payloadSize)))
+        
+        # Set the payload, and pad it with whitespace until all 1013 bytes are used.
+        self.__payload = "{0}{1}".format(payload, ' ' * (PAYLOAD_SIZE - payloadSize))
 
-	def getBytes(self):
-		lstData = list()
+    def getBytes(self):
+        lstData = list()
 
-		lstData.append(self.getPacketType().to_bytes(PACKET_TYPE_SIZE, 'big'))
-		lstData.append(self.getSequenceNumber().to_bytes(SEQUENCE_SIZE, 'big', signed = True))
+        lstData.append(self.getPacketType().to_bytes(PACKET_TYPE_SIZE, 'big'))
+        lstData.append(self.getSequenceNumber().to_bytes(SEQUENCE_SIZE, 'big', signed = True))
 
-		# We assume the destination address is a string. We need to convert it into bytes. Get each number.
-		ipaddr = self.getDestinationAddress().split('.')
+        # We assume the destination address is a string. We need to convert it into bytes. Get each number.
+        ipaddr = self.getDestinationAddress().split('.')
 
-		for i in range(0, 4):
-			lstData.append(int(ipaddr[i]).to_bytes(1, 'big'))
+        for i in range(0, 4):
+            lstData.append(int(ipaddr[i]).to_bytes(1, 'big'))
 
-		lstData.append(self.getDestinationPort().to_bytes(2, 'big'))
-		lstData.append(self.__payload.encode("utf-8"))
+        lstData.append(self.getDestinationPort().to_bytes(2, 'big'))
+        lstData.append(self.__payload.encode("utf-8"))
 
-		byteData = bytearray()
+        byteData = bytearray()
 
-		for entry in lstData:
-			for byte in entry:
-				byteData.append(byte)
+        for entry in lstData:
+            for byte in entry:
+                byteData.append(byte)
 
-		return byteData
+        if (len(byteData) > PACKET_SIZE):
+                        print(byteData)
+
+        return byteData

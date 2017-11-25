@@ -36,4 +36,4 @@ def CreateServer(args):
         print (path)
 
     
-    httpfsServer(verbose, port, path)
+    httpfsServer(verbose, int(port), path).start()

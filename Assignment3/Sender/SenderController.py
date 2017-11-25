@@ -10,12 +10,10 @@ class SenderController:
     __addr = None
     __routerAddr = ('127.0.0.1', 3000)
     __packetBuilder = None
+    __port = None
 
 
     def __init__(self, ip, port):
-        self.__socket = socket(AF_INET, SOCK_DGRAM)
-        self.__socket.settimeout(1)
-
         if (str(ip).lower() == "localhost"):
             ip = "127.0.0.1"
 
@@ -23,6 +21,8 @@ class SenderController:
         self.__addr = (ip, port)
 
     def sendMessage(self, message):
+        self.__socket = socket(AF_INET, SOCK_DGRAM)
+        self.__socket.settimeout(1)
         self.__window = SenderWindow(message, self.sendPacket, self.getResponse)
 
         if self.connect(self.__window.windowSize):
@@ -32,6 +32,9 @@ class SenderController:
                 self.__window.process()
         else:
             print("Could not establish a connection")
+
+        self.__port = self.__socket.getsockname()[1]
+        self.__socket.close()
 
 
     def sendPacket(self, packetType, sequenceNumber, content):
@@ -50,11 +53,16 @@ class SenderController:
             return None
         
     def connect(self, windowSize):
-        self.sendPacket(PACKET_TYPE_SYN, 0, "")
-        response = self.getResponse()
+        for i in range(0, 5):
+            print("Trying to connect: " + str(i))
+            self.sendPacket(PACKET_TYPE_SYN, 0, "")
+            response = self.getResponse()
 
-        if (response is not None and response.getPacketType() == PACKET_TYPE_SYN_AK):
-            self.sendPacket(PACKET_TYPE_AK, 0, str(windowSize))
-            return True
+            if (response is not None and response.getPacketType() == PACKET_TYPE_SYN_AK):
+                self.sendPacket(PACKET_TYPE_AK, 0, str(windowSize))
+                return True
 
         return False
+
+    def getSocketPort(self):
+        return self.__port
