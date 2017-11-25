@@ -16,18 +16,15 @@ class ReceiverController:
 
     def sendPacket(self, packetType, sequenceNumber, content, address):
         packet = self.__packetBuilder.build(packetType, sequenceNumber, content)
-        self.__socketRC.sendto(packet.getBytes(), address)
+        self.__socketRC.sendto(packet.getBytes(), self.__routerAddr)
 
     def getPacket(self):
         data, addr = self.__socketRC.recvfrom(PACKET_SIZE)
         pkt = PacketDecoder.decode(data)
 
-        print(pkt.getDestinationAddress())
-
         if (self.__packetBuilder is None):
             self.__packetBuilder = PacketBuilder(pkt.getDestinationAddress(), pkt.getDestinationPort())
         
-        print(data)
         return pkt
 
     def buildConnection(self):
@@ -51,6 +48,7 @@ class ReceiverController:
                 packet = self.getPacket()
 
                 if (packet.getPacketType() == PACKET_TYPE_DATA):
-                    print("I got something")
+                    print("Data packet received")
+                    print(packet.getPayload())
 
 

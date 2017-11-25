@@ -1,78 +1,74 @@
 import time
 import threading
+import math
+from Packet import *
 
-DEFAULT_WAIT_TIME = 5
+DEFAULT_WAIT_TIME = 10 * 10000
 
+class SelectiveRepeatSender:
 
-class Window:
+    __windowSize = None 
+    __windowStart = 0
 
-	__gotAck = False
-	__gotSyn = False
-	__gotSynAck = False
+    __frameAked = None
+    __frameData = None
+    __frameTimer = None
 
-	__messageCallback = None	# The function which sends back a completed frame.
+    __sendPacket = None
+    __getResponse = None
+    
+    
+    def __init__(self, message, sendPacket, getResponse):
 
-	def __init__(self, messageReceivedCallback):
-		print("todo")
+        self.__sendPacket = sendPacket
+        self.__getResponse = getResponse
+        
+        self.__windowSize = math.ceil(len(message) / PAYLOAD_SIZE)
+        self.__frameAked = [False] * self.__windowSize
+        self.__frameData = [None] * self.__windowSize
+        self.__frameTimer = [0] * self.__windowSize
 
-	def handlePacketAsReceiver(self, packet):
-		packetType = packet.getPacketType();
+        for i in range(0, self.__windowSize):
+            self.__frameData[i] = message[i * PAYLOAD_SIZE:(i + 1) * PAYLOAD_SIZE]
 
-		# Are we getting a new connection?
-		if (packetType == PACKET_TYPE_SYN):
-			# Make sure that we haven't gotten anything first.
-			if (!self.__gotSyn and !self.__gotSynAck and !self.__gotAck):
-				self.__gotSyn = True
-				# TODO: Make a response
+    def finishedSending(self):
+        return False
 
-				self.__gotSynAck = True
+    def process(self):
+        timenow = time.time()
 
-		if (packetType == PACKET_TYPE_AK):
-			if (self.__gotSyn and self.__gotSynAck and !self.__gotAck):
-				# TODO: 
-				self.__gotAck = True
+        # Check the window
+        for i in range(self.__windowStart, self.__windowSize):
+            if (not self.__frameAked[i]):
+                if (timenow > (DEFAULT_WAIT_TIME + self.__frameTimer[i])):
+                    self.__sendPacket(PACKET_TYPE_DATA, i, self.__frameData[i])
 
-		if (packetType == PACKET_TYPE_DATA):
-			if (self.__gotSyn and self.__gotSynAck and self.__gotAck):
-				self.handlePacket(packet)
+        # Wait for feedback.
+        while (True):
+            response = self.__getResponse()
 
-		
+            if (response is not None):
+                print("Got response")
+                self.handleResponse(response)
+            else:
+                print("No response")
+                break
 
-
-	def handlePacketAsSender(self, packet):
-		
-
-	def handlePacket(self, packet):
-		
-		# Figure out what kind of packet it is.
-		packetType = packet.getPacketType();
-		
-		if (packetType == PACKET_TYPE_SYN):
-
-
-
-
-	__windowAked = None		# Denotes whether or not a window frame has been received or not.
-	__timers = None			# Keeps track of the last send time for a window frame.
-	__timeout = DEFAULT_WAIT_TIME
-	__windowStart = 0		# 
-
-	def __init__(self, windowSize, waitTime, timeoutcallback):
-		self.__windowData = [False] * windowSize
-		self.__timers = time.time() * windowSize
-
-		threading.Thread(target=self.__monitorWindow, args=(timeoutcallback).start()
-
-
-	def __monitorWindow(self, timeoutcallback):
-		while (True):
-			for i in range(0, len(self.__windowData)):
-				elapsedTime = time.time() - self.__timers[i]
-				sequenceNumber = (self.__windowStart + i) % 
-
-				if (elapsedTime >= self.__timeout):
-					self.__timers[i] = time.time()
-					timeoutcallback()
+    def handleResponse(self, packet):
+        
+        # Figure out what kind of packet it is.
+        packetType = packet.getPacketType();
+        
+        if (packetType == PACKET_TYPE_AK):
+            print("fuck")
 
 
-window.init(5);
+    def __monitorWindow(self, timeoutcallback):
+        while (True):
+            for i in range(0, len(self.__windowData)):
+                elapsedTime = time.time() - self.__timers[i]
+                sequenceNumber = (self.__windowStart + i) %  1
+
+                if (elapsedTime >= self.__timeout):
+                    self.__timers[i] = time.time()
+                    timeoutcallback()
