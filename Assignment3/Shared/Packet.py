@@ -87,7 +87,4 @@ class Packet:
             for byte in entry:
                 byteData.append(byte)
 
-        if (len(byteData) > PACKET_SIZE):
-                        print(byteData)
-
         return byteData

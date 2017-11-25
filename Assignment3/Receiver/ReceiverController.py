@@ -5,11 +5,11 @@ from PacketBuilder import *
 from SelectiveRepeatReceiver import *
 
 class ReceiverController:
-    
+
+    address = None
     __socketRC = None
     __routerAddr = ('127.0.0.1', 3000)
     __packetBuilder = None
-    address = None
     __window = None
     __port = None
 
