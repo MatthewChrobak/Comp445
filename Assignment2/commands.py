@@ -35,4 +35,4 @@ def CreateServer(args):
         path = os.path.realpath(path + match.group(5)[1:-1])
 
     
-    httpfsServer(verbose, port, path)
+    httpfsServer(verbose, int(port), path).start()

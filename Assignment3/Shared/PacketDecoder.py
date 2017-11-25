@@ -5,7 +5,7 @@ class PacketDecoder:
 	@staticmethod
 	def decode(b_packet):
 		packetType = int.from_bytes([b_packet[0]], 'big')
-		packetSN = int.from_bytes(b_packet[1:5], 'big')
+		packetSN = int.from_bytes(b_packet[1:5], 'big', signed = True)
 		addressP1 = int.from_bytes([b_packet[5]], 'big')
 		addressP2 = int.from_bytes([b_packet[6]], 'big')
 		addressP3 = int.from_bytes([b_packet[7]], 'big')
