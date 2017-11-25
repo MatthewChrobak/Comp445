@@ -33,7 +33,6 @@ def CreateServer(args):
     path = os.getcwd()
     if match.group(4) is not None:
         path = os.path.realpath(path + match.group(5)[1:-1])
-        print (path)
 
     
     httpfsServer(verbose, int(port), path).start()
