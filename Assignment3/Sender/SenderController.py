@@ -23,9 +23,10 @@ class SenderController:
         self.__addr = (ip, port)
 
     def sendMessage(self, message):
-        if self.connect():
+        self.__window = SenderWindow(message, self.sendPacket, self.getResponse)
+
+        if self.connect(self.__window.windowSize):
             print("Connected")
-            self.__window = SenderWindow(message, self.sendPacket, self.getResponse)
 
             while not self.__window.finished():
                 self.__window.process()
@@ -48,12 +49,12 @@ class SenderController:
             print(e)
             return None
         
-    def connect(self):
+    def connect(self, windowSize):
         self.sendPacket(PACKET_TYPE_SYN, 0, "")
         response = self.getResponse()
 
         if (response is not None and response.getPacketType() == PACKET_TYPE_SYN_AK):
-            self.sendPacket(PACKET_TYPE_AK, 0, "")
+            self.sendPacket(PACKET_TYPE_AK, 0, str(windowSize))
             return True
 
         return False

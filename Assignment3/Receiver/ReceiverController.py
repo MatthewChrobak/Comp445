@@ -46,6 +46,8 @@ class ReceiverController:
             packet = self.getPacket()
 
             if (packet.getPacketType() == PACKET_TYPE_AK):
+                windowSize = int(packet.getPayload().rstrip())
+                self.__window = ReceiverWindow(windowSize, self.sendPacket, self.getPacket)
                 return True
 
         return False
@@ -53,9 +55,12 @@ class ReceiverController:
     def getMessage(self):
         # Make sure we have some connection.
         if (self.buildConnection()):
-            self.__window = ReceiverWindow(3, self.sendPacket, self.getPacket)
-            
+
             while not self.__window.finished():
                 self.__window.process()
+
+            self.sendPacket(PACKET_TYPE_AK, self.__window.windowSize, "")
+
+            return self.__window.getMessage()
 
 

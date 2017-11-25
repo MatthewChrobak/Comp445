@@ -34,3 +34,11 @@ class Window:
                 return False
 
         return True
+
+    def getMessage(self):
+        output = ""
+
+        for i in range(0, self.windowSize):
+            output = output + self.frameData[i]
+
+        return output.rstrip()

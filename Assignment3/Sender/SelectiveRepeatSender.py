@@ -34,4 +34,16 @@ class SenderWindow(Window):
         packetType = packet.getPacketType();
         
         if (packetType == PACKET_TYPE_AK):
-            print("fuck")
+            seq = packet.getSequenceNumber()
+
+            for i in range(0, seq + 1):
+                if i < self.windowSize:
+                    if (not self.frameHandled[i]):
+                        print("Got ak for " + str(i))
+                        self.frameHandled[i] = True
+                    else:
+                        print("frame " + str(i) + " is already aked")
+                else:
+                    print("not in range")
+        else:
+            print(str(packetType))
