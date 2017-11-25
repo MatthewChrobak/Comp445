@@ -1,3 +1,5 @@
+from httpcRequestBuilder import *
+
 def ProcessInput(args):
 
     # Make sure we have some input.
@@ -25,11 +27,23 @@ def ProcessCommand(args):
         ProcessHelp(args)
         return
 
-    #if (args[1] == "get"):
-        # TODO
-        
-    #if (args[1] == "post"):
-        # TODO
+    if (args[1] == "get" or args[1] == "post"):
+        count = 1
+        while(True):
+            httpcObj = HttpcRequestBuilder(" ".join(args)).buildRequest()
+            httpcObj.execute()
+            response = httpcObj.getResponse()
+
+            if(response is not None):
+                if(count > 5):
+                    print("Too many redirections.")
+                    return
+                print(str(count) + " - Redirecting to " + response)
+                args[-1] = "'" + response + "'"
+                count = count + 1
+            else:
+                break
+        return
 
     print (args[1] + " is not a known httpc command.")
 
