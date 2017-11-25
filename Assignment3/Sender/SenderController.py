@@ -41,7 +41,9 @@ class SenderController:
     def getResponse(self):
         try:
             data, addr = self.__socket.recvfrom(PACKET_SIZE)
-            return PacketDecoder.decode(data)
+            packet = PacketDecoder.decode(data)
+            print("Got packet type: " + str(packet.getPacketType()) + " with #" + str(packet.getSequenceNumber()))
+            return packet
         except Exception as e:
             print(e)
             return None

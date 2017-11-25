@@ -10,6 +10,7 @@ class Window:
     windowSize = None 
     windowStart = 0
 
+    # Whether or not a frame was handled
     frameHandled = None
     frameData = None
     frameTimer = None
@@ -17,7 +18,7 @@ class Window:
     sendPacket = None
     getResponse = None
 
-    def __init__(self, windowSize, sendPacket, getResponse, empty):
+    def __init__(self, windowSize, sendPacket, getResponse):
         self.windowSize = windowSize
         self.sendPacket = sendPacket
         self.getResponse = getResponse
@@ -33,9 +34,3 @@ class Window:
                 return False
 
         return True
-
-    def process(self):
-        print("No process specified")
-
-    def handleResponse(self, packet):
-        print("No handleResponse specified")

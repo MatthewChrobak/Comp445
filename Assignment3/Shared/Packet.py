@@ -69,7 +69,7 @@ class Packet:
 		lstData = list()
 
 		lstData.append(self.getPacketType().to_bytes(PACKET_TYPE_SIZE, 'big'))
-		lstData.append(self.getSequenceNumber().to_bytes(SEQUENCE_SIZE, 'big'))
+		lstData.append(self.getSequenceNumber().to_bytes(SEQUENCE_SIZE, 'big', signed = True))
 
 		# We assume the destination address is a string. We need to convert it into bytes. Get each number.
 		ipaddr = self.getDestinationAddress().split('.')

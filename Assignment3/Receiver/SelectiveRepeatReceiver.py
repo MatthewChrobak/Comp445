@@ -1,12 +1,17 @@
 from SelectiveRepeatWindow import *
 
-class SenderWindow(Window):
-    def __init__(self, message, sendPacket, getResponse):
-        windowSize = math.ceil(len(message) / PAYLOAD_SIZE)
-        super().__init__(windowSize, sendPacket, getResponse)
+class ReceiverWindow(Window):
 
+    def __init__(self, windowSize, sendPacket, getResponse):
+        super().__init__(windowSize, sendPacket, getResponse)
+        
+
+    def finished(self):
         for i in range(0, self.windowSize):
-            self.frameData[i] = message[i * PAYLOAD_SIZE:(i + 1) * PAYLOAD_SIZE]
+            if not self.frameHandled[i]:
+                return False
+
+        return True
 
     def process(self):
         timenow = time.time()
@@ -15,23 +20,23 @@ class SenderWindow(Window):
         for i in range(self.windowStart, self.windowSize):
             if (not self.frameHandled[i]):
                 if (timenow > (DEFAULT_WAIT_TIME + self.frameTimer[i])):
-                    self.sendPacket(PACKET_TYPE_DATA, i, self.frameData[i])
+                    self.sendPacket(PACKET_TYPE_AK, i - 1, "")
 
-        # Wait for feedback.
+                break
+
+        # Wait for incoming data
         while (True):
-            response = self.getResponse()
+            response = self.getResponse(1)
 
             if (response is not None):
-                print("Got response")
                 self.handleResponse(response)
             else:
                 print("No response")
                 break
 
     def handleResponse(self, packet):
-        
-        # Figure out what kind of packet it is.
-        packetType = packet.getPacketType();
-        
-        if (packetType == PACKET_TYPE_AK):
-            print("fuck")
+        if (packet.getPacketType() == PACKET_TYPE_DATA):
+            seq = packet.getSequenceNumber()
+
+            self.frameData[seq] = packet.getPayload()
+            self.frameHandled[seq] = True
