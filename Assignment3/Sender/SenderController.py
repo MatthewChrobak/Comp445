@@ -2,7 +2,7 @@ from socket import *
 from Packet import *
 from PacketBuilder import *
 from PacketDecoder import *
-from SelectiveRepeat import *
+from SelectiveRepeatSender import *
 
 class SenderController:
     __window = None
@@ -25,9 +25,9 @@ class SenderController:
     def sendMessage(self, message):
         if self.connect():
             print("Connected")
-            self.__window = Window(message, self.sendPacket, self.getResponse)
+            self.__window = SenderWindow(message, self.sendPacket, self.getResponse)
 
-            while not self.__window.finishedSending():
+            while not self.__window.finished():
                 self.__window.process()
         else:
             print("Could not establish a connection")

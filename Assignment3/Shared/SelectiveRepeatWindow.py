@@ -7,32 +7,29 @@ DEFAULT_WAIT_TIME = 10
 
 class Window:
 
-    __windowSize = None 
-    __windowStart = 0
+    windowSize = None 
+    windowStart = 0
 
-    __frameHandled = None
-    __frameData = None
-    __frameTimer = None
+    frameHandled = None
+    frameData = None
+    frameTimer = None
 
-    __sendPacket = None
-    __getResponse = None
+    sendPacket = None
+    getResponse = None
 
-    def __init__(self, windowSize, sendPacket, getResponse):
-        self.__windowSize = windowSize
-        self.__sendPacket = sendPacket
-        self.__getResponse = getResponse
+    def __init__(self, windowSize, sendPacket, getResponse, empty):
+        self.windowSize = windowSize
+        self.sendPacket = sendPacket
+        self.getResponse = getResponse
 
-        self.__frameAked = [False] * self.__windowSize
-        self.__frameData = [None] * self.__windowSize
-        self.__frameTimer = [0] * self.__windowSize
-
-        for i in range(0, self.__windowSize):
-            self.__frameData[i] = message[i * PAYLOAD_SIZE:(i + 1) * PAYLOAD_SIZE]
+        self.frameHandled = [False] * self.windowSize
+        self.frameData = [None] * self.windowSize
+        self.frameTimer = [0] * self.windowSize
         
 
     def finished(self):
-        for i in range(0, self.__windowSize):
-            if not self.__frameHandled[i]:
+        for i in range(0, self.windowSize):
+            if not self.frameHandled[i]:
                 return False
 
         return True
