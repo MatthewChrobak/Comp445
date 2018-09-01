@@ -51,4 +51,4 @@ class Uri:
         return self.__port
 
     def getFullURI(self):
-        return "{0}{1}{2}{3}".format(self.__applicationType, self.getDomain(), self.getResourcePath(), self.getArguments())
+        return "{0}{1}{2}{3}".format(self.__applicationType, self.getDomain(), self.getResourcePath(), self.getArguments
